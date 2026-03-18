@@ -1,65 +1,913 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import ContactModal from "./ContactModal";
 
 export default function Home() {
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNavScrolled, setIsNavScrolled] = useState(false);
+
+  // Scroll-triggered animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Stagger cards within the element
+            const cards = entry.target.querySelectorAll(".animate-card");
+            cards.forEach((card, index) => {
+              setTimeout(() => {
+                card.classList.add("animated");
+              }, index * 100);
+            });
+            entry.target.classList.add("animated");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = document.querySelectorAll(".animate-on-scroll");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Navbar scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsNavScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollTo = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  const navLinks = [
+    { label: "Home", target: "hero" },
+    { label: "Menu", target: "menu" },
+    { label: "Aqiqah", target: "aqiqah" },
+    { label: "Lokasi", target: "lokasi" },
+  ];
+
+  const activeLink = useRef("hero");
+
+  // Track active section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["hero", "menu", "aqiqah", "lokasi"];
+      for (const section of sections.reverse()) {
+        const el = document.getElementById(section);
+        if (el && el.getBoundingClientRect().top <= 120) {
+          activeLink.current = section;
+          break;
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <>
+      {/* Top Navigation */}
+      <nav
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${isNavScrolled
+          ? "bg-[#faf9f5]/95 backdrop-blur-md shadow-md py-2"
+          : "bg-[#faf9f5]/80 backdrop-blur-md shadow-sm py-4"
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-8 flex justify-between items-center">
+          {/* Logo */}
+          <button onClick={() => scrollTo("hero")} className="flex items-center gap-3 shrink-0">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/Logo langseng ibu.jpeg"
+              alt="Langseng Ibu Logo"
+              width={40}
+              height={40}
+              className="rounded-full object-cover"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <span className="text-xl md:text-2xl font-headline font-bold text-primary">
+              Langseng Ibu
+            </span>
+          </button>
+
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <button
+                key={link.target}
+                onClick={() => scrollTo(link.target)}
+                className="text-stone-600 hover:text-primary transition-colors font-label tracking-wide cursor-pointer"
+              >
+                {link.label}
+              </button>
+            ))}
+            <button
+              onClick={() => setIsContactOpen(true)}
+              className="text-stone-600 hover:text-primary transition-colors font-label tracking-wide cursor-pointer"
+            >
+              Contact
+            </button>
+          </div>
+
+          {/* Desktop CTA + Mobile hamburger */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsContactOpen(true)}
+              className="hidden md:block bg-primary hover:bg-primary-container text-on-primary px-6 py-2 rounded-full font-label font-semibold transition-all active:scale-95 duration-150 cursor-pointer"
+            >
+              Order Now
+            </button>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors"
+            >
+              <span className="material-symbols-outlined">
+                {isMobileMenuOpen ? "close" : "menu"}
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            }`}
+        >
+          <div className="px-6 pb-4 pt-2 space-y-1 border-t border-outline-variant/20 mt-2">
+            {navLinks.map((link) => (
+              <button
+                key={link.target}
+                onClick={() => scrollTo(link.target)}
+                className="block w-full text-left py-3 px-4 rounded-xl text-on-surface hover:bg-surface-container transition-colors font-label"
+              >
+                {link.label}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                setIsContactOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-3 px-4 rounded-xl text-on-surface hover:bg-surface-container transition-colors font-label"
+            >
+              Contact
+            </button>
+            <button
+              onClick={() => {
+                setIsContactOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full mt-2 bg-primary text-on-primary py-3 rounded-full font-label font-semibold"
+            >
+              Order Now
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main>
+        {/* Hero Section */}
+        <section id="hero" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt="Nasi Kebuli"
+              className="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRSPvps1n9CncTYFZG9KjtvVo3fCwWZlMkFoJJExTIagfF5ZNwTS1X5s4BPNDMKrYtGzWahi-Y8LOJ72eq7za6qwAa1je5TL6nT76ENJ1YbQQac3GEdy38AfAmBQsI1qWAjFyd_r6lhKNAtfYR1fdjeuv6BCXq_0EiUM6FghC4pMVLWbzCH7Z19jIaVQSfgc1Z4yBERxXOXqkqCejzTRYieGrJXqceV9Irevy87tjCx4cgl17sfZ5-p4HTQGmDYWeQVEE7F9kixASA"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/70 to-transparent"></div>
+          </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <span className="animate-hero animate-hero-delay-1 inline-block px-4 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-sm font-bold font-label uppercase tracking-widest">
+                Chatering Makanan
+              </span>
+              <h1 className="animate-hero animate-hero-delay-2 text-5xl sm:text-6xl md:text-7xl font-headline font-bold text-primary leading-[1.1] tracking-tight">
+                Cita Rasa Otentik Nasi Kebuli &amp; Katering Rumahan
+              </h1>
+              <p className="animate-hero animate-hero-delay-3 text-lg md:text-xl text-on-surface-variant max-w-lg leading-relaxed">
+                Membawa kehangatan dapur ibu ke setiap hidangan. Menggunakan
+                rempah pilihan untuk pengalaman kuliner Nusantara yang tak
+                terlupakan.
+              </p>
+              <div className="animate-hero animate-hero-delay-4 flex flex-wrap gap-4 pt-4">
+                <button
+                  onClick={() => scrollTo("menu")}
+                  className="bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-lg hover:shadow-xl transition-all active:scale-95 cursor-pointer"
+                >
+                  Lihat Menu
+                </button>
+                <button
+                  onClick={() => setIsContactOpen(true)}
+                  className="border-2 border-outline-variant text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container-low transition-all cursor-pointer"
+                >
+                  Hubungi Kami
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Menu Section */}
+        <section className="py-24 bg-surface-container-low" id="menu">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
+            <div className="animate-on-scroll text-center mb-16 space-y-4">
+              <h2 className="text-4xl font-headline font-bold text-primary italic">
+                Signature Collection
+              </h2>
+              <p className="text-on-surface-variant font-label tracking-[0.2em] uppercase text-sm">
+                Pilihan Terbaik Untuk Setiap Momen
+              </p>
+            </div>
+
+            {/* Nasi Kebuli Section */}
+            <div className="mb-24 animate-on-scroll">
+              <div className="flex items-center gap-4 mb-10">
+                <h3 className="text-3xl font-headline font-bold text-secondary">
+                  Nasi Kebuli
+                </h3>
+                <div className="h-[1px] flex-grow bg-outline-variant opacity-30"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Nasi Kebuli Basmati Lengkap */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Nasi Kebuli Basmati"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Nasi kebuli basmati lengkap.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Nasi Kebuli Basmati Lengkap
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">45Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2 italic">
+                      Nasi basmati premium, rempah aromatik, pilihan daging, acar, dan sambal spesial.
+                    </p>
+                    <span className="inline-block px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">
+                      Most Popular
+                    </span>
+                  </div>
+                </div>
+
+                {/* Nasi Kebuli Kambing Komplit */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Nasi Kebuli Kambing Komplit"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Kebuli kambing komplit.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Nasi Kebuli Lengkap
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">40Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2">
+                      Resep nasi lokal autentik dengan rempah tradisional dan daging kambing empuk.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Nasi Kebuli Ayam Komplit */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Nasi Kebuli Ayam"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Nasi kebuli ayam komplit.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Nasi Kebuli Ayam Lengkap
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">35Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2">
+                      Nasi kebuli berbumbu disajikan dengan ayam panggang gurih sempurna.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Nasi Kebuli Basmati Ayam */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Nasi Kebuli Basmati Ayam"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Kebuli basmati ayam komplit.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Nasi Kebuli Basmati Ayam
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">40Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2">
+                      Nasi basmati premium dipadukan dengan ayam bumbu rempah khas kami.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Kebuli Ati Sapi + Telor */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Kebuli Sambal Goreng Ati"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Kebuli sambel goreng ati sapi+telor balado.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Kebuli Ati Sapi + Telor
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">30Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2">
+                      Perpaduan unik nasi kebuli dengan sambal goreng ati sapi dan telor balado.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Kebuli Kambing Tambahan */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Kebuli Kambing Tambahan"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Kebuli kambing tampahan.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Kebuli Kambing Tambahan
+                      </h4>
+                      <span className="text-xl font-bold text-primary whitespace-nowrap ml-2">45Rb</span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm line-clamp-2">
+                      Porsi ekstra nasi kebuli kambing dengan lauk tambahan pilihan.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Paket Prasmanan Section */}
+            <div className="mb-24 animate-on-scroll">
+              <div className="flex items-center gap-4 mb-10">
+                <h3 className="text-3xl font-headline font-bold text-secondary">
+                  Paket Prasmanan
+                </h3>
+                <div className="h-[1px] flex-grow bg-outline-variant opacity-30"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Paket Prasmanan Kebuli */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[16/9] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Paket Prasmanan Kebuli"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/nasi kebuli tampanan.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Prasmanan Kebuli
+                      </h4>
+                      <span className="inline-block px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">
+                        Harga Nego
+                      </span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm">
+                      Paket prasmanan nasi kebuli lengkap untuk acara besar. Cocok untuk hajatan, syukuran, dan pernikahan.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Paket Prasmanan Kebuli Rendang */}
+                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                  <div className="aspect-[16/9] overflow-hidden relative bg-surface-container">
+                    <Image
+                      alt="Paket Prasmanan Kebuli Rendang"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      src="/Paket prasmanan Kebuli rendang.jpeg"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-headline font-bold text-xl leading-tight">
+                        Prasmanan Kebuli Rendang
+                      </h4>
+                      <span className="inline-block px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">
+                        Harga Nego
+                      </span>
+                    </div>
+                    <p className="text-on-surface-variant text-sm">
+                      Kombinasi spesial nasi kebuli dengan rendang daging sapi empuk. Favorit untuk acara kantor.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Nasi Kuning & Kotak Section */}
+            <div className="mb-12 animate-on-scroll">
+              <div className="flex items-center gap-4 mb-10">
+                <h3 className="text-3xl font-headline font-bold text-secondary">
+                  Nasi Kuning &amp; Kotak
+                </h3>
+                <div className="h-[1px] flex-grow bg-outline-variant opacity-30"></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Paket Nasi Liwet */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Nasi Liwet"
+                      className="object-contain"
+                      src="/Paket nasi liwet.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Paket Nasi Liwet</h4>
+                    <p className="text-xs text-on-surface-variant italic">
+                      Sambal Goreng, Perkedel, Tempe, Lalapan.
+                    </p>
+                    <p className="text-lg font-bold text-primary">35Rb</p>
+                  </div>
+                </div>
+
+                {/* Nasi Kuning Paket Ulta */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Nasi Kuning Ulta"
+                      className="object-contain"
+                      src="/Nasi kuning paket ultah.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Paket Ulta Anak</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Higienis &amp; ceria untuk perayaan spesial.
+                    </p>
+                    <p className="text-lg font-bold text-primary">20Rb</p>
+                  </div>
+                </div>
+
+                {/* Nasi Kuning Box */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Nasi Kuning Box"
+                      className="object-contain"
+                      src="/Nasi kuning box.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Nasi Kuning Box</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Lauk pauk lengkap standar katering.
+                    </p>
+                    <p className="text-lg font-bold text-primary">17Rb</p>
+                  </div>
+                </div>
+
+                {/* Paket Ayam Katsu */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Ayam Katsu"
+                      className="object-contain"
+                      src="/Paket ayam kastu.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Paket Ayam Katsu</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Ayam crispy dengan saus gurih.
+                    </p>
+                    <p className="text-lg font-bold text-primary">15Rb</p>
+                  </div>
+                </div>
+
+                {/* Nasi Kuning Mika */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Nasi Kuning Mika"
+                      className="object-contain"
+                      src="/Nasi kuning mika.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Nasi Kuning Mika</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Porsi personal praktis &amp; ekonomis.
+                    </p>
+                    <p className="text-lg font-bold text-primary">7Rb</p>
+                  </div>
+                </div>
+
+                {/* Nasi Uduk Lengkap */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Nasi Uduk"
+                      className="object-contain"
+                      src="/nasi uduk.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Nasi Uduk Lengkap</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Gurih santan dengan lauk pilihan.
+                    </p>
+                    <p className="text-lg font-bold text-primary">12Rb</p>
+                  </div>
+                </div>
+
+                {/* Nasi Ayam Teriyaki */}
+                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                  <div className="relative h-32 w-full bg-surface-container">
+                    <Image
+                      alt="Ayam Teriyaki"
+                      className="object-contain"
+                      src="/Nasi ayam teriyaki.jpeg"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-headline font-bold text-lg">Nasi Ayam Teriyaki</h4>
+                    <p className="text-xs text-on-surface-variant">
+                      Sajian modern bumbu teriyaki manis gurih.
+                    </p>
+                    <p className="text-lg font-bold text-primary">15Rb</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Aqiqah Section */}
+        <section className="py-24 bg-surface" id="aqiqah">
+          <div className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 animate-on-scroll">
+              <div className="relative">
+                <div className="absolute -top-4 -left-4 w-24 h-24 bg-secondary-container rounded-full -z-10 animate-float"></div>
+                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image
+                    alt="Paket Aqiqah"
+                    className="object-cover"
+                    src="/paket aqiqah.jpeg"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+                <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-2xl shadow-xl max-w-xs hidden sm:block">
+                  <div className="flex items-center gap-4 mb-2">
+                    <span
+                      className="material-symbols-outlined text-secondary"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      verified
+                    </span>
+                    <span className="font-bold text-secondary">
+                      Sertifikat Resmi
+                    </span>
+                  </div>
+                  <p className="text-sm text-on-surface-variant">
+                    Kami menyediakan dokumentasi video pemotongan sesuai syariat.
+                  </p>
+                </div>
+              </div>
+              {/* Additional Aqiqah detail photo */}
+              <div className="mt-12 relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  alt="Detail Makanan Aqiqah"
+                  className="object-cover"
+                  src="/Paket aqiqah detail makanan.jpeg"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </div>
+            <div className="order-1 md:order-2 space-y-8 animate-on-scroll">
+              <div className="space-y-4">
+                <h2 className="text-4xl font-headline font-bold text-primary">
+                  Paket Aqiqah Amanah
+                </h2>
+                <p className="text-on-surface-variant leading-relaxed">
+                  Rayakan kehadiran sang buah hati dengan layanan Aqiqah yang
+                  syari, praktis, dan berkualitas tinggi. Kami mengelola
+                  segalanya dari pemilihan hewan hingga packing hantaran.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {/* Package 1 */}
+                <div className="group bg-surface-container-low p-6 rounded-2xl border border-transparent hover:border-secondary transition-all cursor-default">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-headline font-bold text-xl mb-1">
+                        Kambing 1 (Anak Perempuan)
+                      </h4>
+                      <p className="text-sm text-on-surface-variant">
+                        Estimasi: 50-60 Box Premium
+                      </p>
+                    </div>
+                    <span className="text-2xl font-headline font-bold text-primary">
+                      Rp 3.5jt
+                    </span>
+                  </div>
+                </div>
+                {/* Package 2 */}
+                <div className="group bg-surface-container-low p-6 rounded-2xl border border-transparent hover:border-secondary transition-all cursor-default">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-headline font-bold text-xl mb-1">
+                        Kambing 2 (Anak Laki-laki)
+                      </h4>
+                      <p className="text-sm text-on-surface-variant">
+                        Estimasi: 100-120 Box Premium
+                      </p>
+                    </div>
+                    <span className="text-2xl font-headline font-bold text-primary">
+                      Rp 6.5jt
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+                    <span className="material-symbols-outlined text-xs">
+                      featured_seasonal_and_gifts
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium">Free Souvenir</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+                    <span className="material-symbols-outlined text-xs">
+                      card_giftcard
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium">Kartu Ucapan</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+                    <span className="material-symbols-outlined text-xs">
+                      video_camera_front
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium">Video Pemotongan</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+                    <span className="material-symbols-outlined text-xs">
+                      workspace_premium
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium">Sertifikat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Location / About Section */}
+        <section className="py-24 bg-surface-container-low" id="lokasi">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
+            <div className="animate-on-scroll text-center mb-16 space-y-4">
+              <h2 className="text-4xl font-headline font-bold text-primary">
+                Temukan Kami
+              </h2>
+              <p className="text-on-surface-variant font-label tracking-[0.2em] uppercase text-sm">
+                Lokasi Dapur &amp; Informasi Kontak
+              </p>
+            </div>
+            <div className="animate-on-scroll grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+              {/* Map */}
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-surface-variant/30 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126920.29279958498!2d106.6894327!3d-6.2297401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x5371bf0fdad786a2!2sJakarta%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1710000000000!5m2!1sid!2sid"
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Lokasi Langseng Ibu"
+                ></iframe>
+              </div>
+
+              {/* Contact info */}
+              <div className="space-y-8">
+                <div className="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-surface-variant/30 space-y-6">
+                  <div className="flex items-start gap-4">
+                    <span className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-primary">location_on</span>
+                    </span>
+                    <div>
+                      <h4 className="font-headline font-bold text-lg mb-1">Alamat Dapur</h4>
+                      <p className="text-on-surface-variant text-sm leading-relaxed">
+                        Jl. Contoh Alamat No. 123, RT 01/RW 02,
+                        <br />
+                        Kelurahan, Kecamatan, Jakarta Selatan 12345
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[1px] bg-outline-variant/30"></div>
+
+                  <div className="flex items-start gap-4">
+                    <span className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-primary">schedule</span>
+                    </span>
+                    <div>
+                      <h4 className="font-headline font-bold text-lg mb-1">Jam Operasional</h4>
+                      <p className="text-on-surface-variant text-sm leading-relaxed">
+                        Senin - Sabtu: 07.00 - 20.00 WIB
+                        <br />
+                        Minggu: 08.00 - 17.00 WIB
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[1px] bg-outline-variant/30"></div>
+
+                  <div className="flex items-start gap-4">
+                    <span className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-primary">call</span>
+                    </span>
+                    <div>
+                      <h4 className="font-headline font-bold text-lg mb-1">Telepon / WhatsApp</h4>
+                      <p className="text-on-surface-variant text-sm">
+                        +62 812-3456-7890
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[1px] bg-outline-variant/30"></div>
+
+                  <div className="flex items-start gap-4">
+                    <span className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-primary">mail</span>
+                    </span>
+                    <div>
+                      <h4 className="font-headline font-bold text-lg mb-1">Email</h4>
+                      <p className="text-on-surface-variant text-sm">
+                        langsengibu@gmail.com
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-20 bg-primary-container text-on-primary-container relative overflow-hidden">
+          <div className="absolute top-0 right-0 opacity-10 translate-x-1/4 -translate-y-1/4">
+            <span className="material-symbols-outlined text-[30rem] animate-float">
+              lunch_dining
+            </span>
+          </div>
+          <div className="animate-on-scroll max-w-4xl mx-auto px-6 md:px-8 text-center relative z-10 space-y-8">
+            <h2 className="text-4xl md:text-5xl font-headline font-bold">
+              Siap Menghidangkan Kelezatan?
+            </h2>
+            <p className="text-xl opacity-90 font-body">
+              Pesan katering favorit Anda sekarang untuk acara keluarga, kantor,
+              atau syukuran.
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsContactOpen(true)}
+                className="bg-secondary-container text-on-secondary-fixed px-12 py-5 rounded-full text-xl font-bold shadow-2xl hover:scale-105 transition-transform flex items-center gap-3 cursor-pointer"
+              >
+                <span className="material-symbols-outlined">chat</span>
+                Pesan Sekarang
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
-    </div>
+
+      {/* Footer */}
+      <footer className="bg-surface-container-low border-t border-outline-variant/20">
+        <div className="max-w-7xl mx-auto py-12 px-6 md:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-4 text-center md:text-left">
+              <Image
+                src="/Logo langseng ibu.jpeg"
+                alt="Langseng Ibu Logo"
+                width={48}
+                height={48}
+                className="rounded-full object-cover"
+              />
+              <div>
+                <span className="text-2xl font-headline font-bold text-primary block mb-1">
+                  Langseng Ibu
+                </span>
+                <p className="text-on-surface-variant text-xs font-body tracking-wider">
+                  © 2024 Langseng Ibu. The Modern Heirloom of Nasi Kebuli &amp;
+                  Aqiqah.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsContactOpen(true)}
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">chat</span>
+              </button>
+              <button
+                onClick={() => setIsContactOpen(true)}
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">photo_camera</span>
+              </button>
+              <button
+                onClick={() => setIsContactOpen(true)}
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">mail</span>
+              </button>
+              <button
+                onClick={() => setIsContactOpen(true)}
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">call</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Contact Modal */}
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+    </>
   );
 }

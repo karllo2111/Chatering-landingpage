@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors - Material Design 3 palette */
+  --color-on-secondary-fixed: #231b00;
+  --color-surface-container-lowest: #ffffff;
+  --color-tertiary-container: #8f6d62;
+  --color-on-secondary: #ffffff;
+  --color-primary: #9e3d00;
+  --color-surface-container-low: #f4f4f0;
+  --color-primary-fixed: #ffdbcd;
+  --color-secondary: #735c00;
+  --color-on-secondary-fixed-variant: #574500;
+  --color-primary-fixed-dim: #ffb595;
+  --color-on-primary-fixed: #351000;
+  --color-on-primary: #ffffff;
+  --color-surface: #faf9f5;
+  --color-on-secondary-container: #6f5900;
+  --color-surface-container: #eeeeea;
+  --color-tertiary-fixed-dim: #e7bdb1;
+  --color-on-tertiary-fixed: #2c160e;
+  --color-surface-tint: #a23f00;
+  --color-on-tertiary: #ffffff;
+  --color-surface-container-highest: #e2e3df;
+  --color-on-error-container: #93000a;
+  --color-on-surface: #1a1c1a;
+  --color-tertiary-fixed: #ffdbd0;
+  --color-outline-variant: #e0c0b2;
+  --color-on-tertiary-container: #fffbff;
+  --color-on-error: #ffffff;
+  --color-outline: #8c7166;
+  --color-error-container: #ffdad6;
+  --color-background: #faf9f5;
+  --color-inverse-primary: #ffb595;
+  --color-on-tertiary-fixed-variant: #5d4037;
+  --color-inverse-surface: #2f312e;
+  --color-on-surface-variant: #594238;
+  --color-tertiary: #74554b;
+  --color-secondary-container: #fed023;
+  --color-on-background: #1a1c1a;
+  --color-error: #ba1a1a;
+  --color-primary-container: #c64f00;
+  --color-on-primary-container: #fffbff;
+  --color-surface-dim: #dadad6;
+  --color-surface-container-high: #e8e8e4;
+  --color-surface-variant: #e2e3df;
+  --color-surface-bright: #faf9f5;
+  --color-secondary-fixed-dim: #eec209;
+  --color-secondary-fixed: #ffe084;
+  --color-inverse-on-surface: #f1f1ed;
+  --color-on-primary-fixed-variant: #7c2e00;
+
+  /* Font families */
+  --font-headline: "Noto Serif", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-label: "Plus Jakarta Sans", sans-serif;
+
+  /* Border radius */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Glass navigation backdrop */
+.glass-nav {
+  backdrop-filter: blur(12px);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed);
+}
+
+/* Scroll-triggered fade-in-up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Intersection Observer animation classes */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.animate-on-scroll.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered card animations */
+.animate-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.animate-card.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero text animation */
+.animate-hero {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-hero-delay-1 {
+  animation-delay: 0.2s;
+}
+
+.animate-hero-delay-2 {
+  animation-delay: 0.4s;
+}
+
+.animate-hero-delay-3 {
+  animation-delay: 0.6s;
+}
+
+.animate-hero-delay-4 {
+  animation-delay: 0.8s;
+}
+
+/* Modal animations */
+.modal-backdrop {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-content {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
