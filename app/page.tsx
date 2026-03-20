@@ -3,9 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import ContactModal from "./ContactModal";
+import ImageModal from "./ImageModal";
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState({ src: "", alt: "" });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNavScrolled, setIsNavScrolled] = useState(false);
 
@@ -59,6 +62,11 @@ export default function Home() {
     { label: "Aqiqah", target: "aqiqah" },
     { label: "Lokasi", target: "lokasi" },
   ];
+
+  const openImagePreview = (src: string, alt: string) => {
+    setSelectedImage({ src, alt });
+    setIsImageModalOpen(true);
+  };
 
   const activeLink = useRef("hero");
 
@@ -244,7 +252,10 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {/* Nasi Kebuli Basmati Lengkap */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi kebuli basmati lengkap.jpeg", "Nasi Kebuli Basmati Lengkap")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Nasi Kebuli Basmati"
@@ -271,7 +282,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kebuli Kambing Komplit */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Kebuli kambing komplit.jpeg", "Nasi Kebuli Lengkap")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Nasi Kebuli Kambing Komplit"
@@ -295,7 +309,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kebuli Ayam Komplit */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi kebuli ayam komplit.jpeg", "Nasi Kebuli Ayam Lengkap")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Nasi Kebuli Ayam"
@@ -319,7 +336,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kebuli Basmati Ayam */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Kebuli basmati ayam komplit.jpeg", "Nasi Kebuli Basmati Ayam")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Nasi Kebuli Basmati Ayam"
@@ -343,7 +363,10 @@ export default function Home() {
                 </div>
 
                 {/* Kebuli Ati Sapi + Telor */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Kebuli sambel goreng ati sapi+telor balado.jpeg", "Kebuli Ati Sapi + Telor")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Kebuli Sambal Goreng Ati"
@@ -367,7 +390,10 @@ export default function Home() {
                 </div>
 
                 {/* Kebuli Kambing Tambahan */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Kebuli kambing tampahan.jpeg", "Kebuli Kambing Tambahan")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[4/3] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Kebuli Kambing Tambahan"
@@ -402,7 +428,10 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Paket Prasmanan Kebuli */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/nasi kebuli tampanan.jpeg", "Prasmanan Kebuli")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[16/9] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Paket Prasmanan Kebuli"
@@ -428,7 +457,10 @@ export default function Home() {
                 </div>
 
                 {/* Paket Prasmanan Kebuli Rendang */}
-                <div className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Paket prasmanan Kebuli rendang.jpeg", "Prasmanan Kebuli Rendang")}
+                  className="animate-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden border border-surface-variant/50 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="aspect-[16/9] overflow-hidden relative bg-surface-container">
                     <Image
                       alt="Paket Prasmanan Kebuli Rendang"
@@ -465,7 +497,10 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Paket Nasi Liwet */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Paket nasi liwet.jpeg", "Paket Nasi Liwet")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Nasi Liwet"
@@ -485,7 +520,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kuning Paket Ulta */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi kuning paket ultah.jpeg", "Paket Ulta Anak")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Nasi Kuning Ulta"
@@ -505,7 +543,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kuning Box */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi kuning box.jpeg", "Nasi Kuning Box")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Nasi Kuning Box"
@@ -525,7 +566,10 @@ export default function Home() {
                 </div>
 
                 {/* Paket Ayam Katsu */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Paket ayam kastu.jpeg", "Paket Ayam Katsu")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Ayam Katsu"
@@ -545,7 +589,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Kuning Mika */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi kuning mika.jpeg", "Nasi Kuning Mika")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Nasi Kuning Mika"
@@ -565,7 +612,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Uduk Lengkap */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/nasi uduk.jpeg", "Nasi Uduk Lengkap")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Nasi Uduk"
@@ -585,7 +635,10 @@ export default function Home() {
                 </div>
 
                 {/* Nasi Ayam Teriyaki */}
-                <div className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1">
+                <div
+                  onClick={() => openImagePreview("/Nasi ayam teriyaki.jpeg", "Nasi Ayam Teriyaki")}
+                  className="animate-card bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-surface-variant/30 hover:-translate-y-1 cursor-zoom-in"
+                >
                   <div className="relative h-32 w-full bg-surface-container">
                     <Image
                       alt="Ayam Teriyaki"
@@ -614,10 +667,13 @@ export default function Home() {
             <div className="order-2 md:order-1 animate-on-scroll">
               <div className="relative">
                 <div className="absolute -top-4 -left-4 w-24 h-24 bg-secondary-container rounded-full -z-10 animate-float"></div>
-                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
+                <div
+                  onClick={() => openImagePreview("/paket aqiqah.jpeg", "Paket Aqiqah Amanah")}
+                  className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl cursor-zoom-in group"
+                >
                   <Image
                     alt="Paket Aqiqah"
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                     src="/paket aqiqah.jpeg"
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -641,10 +697,13 @@ export default function Home() {
                 </div>
               </div>
               {/* Additional Aqiqah detail photo */}
-              <div className="mt-12 relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+              <div
+                onClick={() => openImagePreview("/Paket aqiqah detail makanan.jpeg", "Detail Makanan Aqiqah")}
+                className="mt-12 relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg cursor-zoom-in group"
+              >
                 <Image
                   alt="Detail Makanan Aqiqah"
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                   src="/Paket aqiqah detail makanan.jpeg"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -894,6 +953,14 @@ export default function Home() {
           Chat WhatsApp
         </span>
       </a>
+
+      {/* Image Preview Modal */}
+      <ImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        imageSrc={selectedImage.src}
+        altText={selectedImage.alt}
+      />
 
       {/* Contact Modal */}
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
