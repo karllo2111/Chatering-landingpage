@@ -42,7 +42,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     <div className="space-y-3">
                         {/* WhatsApp */}
                         <a
-                            href="https://wa.me/6281234567890"
+                            href="https://wa.me/6289537325353"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-all group"
@@ -54,7 +54,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                             </div>
                             <div>
                                 <span className="font-bold text-[#25D366] group-hover:underline">WhatsApp</span>
-                                <p className="text-xs text-on-surface-variant">Chat langsung dengan kami</p>
+                                <p className="text-xs text-on-surface-variant">+62 895-3732-53535</p>
                             </div>
                             <span className="material-symbols-outlined ml-auto text-on-surface-variant group-hover:translate-x-1 transition-transform">
                                 arrow_forward
@@ -63,7 +63,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                         {/* Instagram */}
                         <a
-                            href="https://instagram.com/langsengibu"
+                            href="https://instagram.com/langseng_ibu"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-4 p-4 rounded-2xl bg-[#E4405F]/10 border border-[#E4405F]/20 hover:bg-[#E4405F]/20 transition-all group"
@@ -75,7 +75,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                             </div>
                             <div>
                                 <span className="font-bold text-[#E4405F] group-hover:underline">Instagram</span>
-                                <p className="text-xs text-on-surface-variant">Follow & DM kami</p>
+                                <p className="text-xs text-on-surface-variant">@langseng_ibu</p>
                             </div>
                             <span className="material-symbols-outlined ml-auto text-on-surface-variant group-hover:translate-x-1 transition-transform">
                                 arrow_forward
