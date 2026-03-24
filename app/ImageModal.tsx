@@ -9,7 +9,12 @@ interface ImageModalProps {
     altText: string;
 }
 
-export default function ImageModal({ isOpen, onClose, imageSrc, altText }: ImageModalProps) {
+export default function ImageModal({
+    isOpen,
+    onClose,
+    imageSrc,
+    altText,
+}: ImageModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -28,9 +33,11 @@ export default function ImageModal({ isOpen, onClose, imageSrc, altText }: Image
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute -top-11 md:top-0 -right-2 md:-right-16 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
+                    className="absolute top-3 right-3 md:top-0 md:-right-16 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
                 >
-                    <span className="material-symbols-outlined text-3xl">close</span>
+                    <span className="material-symbols-outlined text-3xl">
+                        close
+                    </span>
                 </button>
 
                 <div className="relative w-full h-full flex items-center justify-center">

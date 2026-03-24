@@ -205,7 +205,7 @@ export default function Home() {
                 Chatering Makanan
               </span>
               <h1 className="animate-hero animate-hero-delay-2 text-5xl sm:text-6xl md:text-7xl font-headline font-bold text-primary leading-[1.1] tracking-tight">
-                Cita Rasa Otentik Nasi Kebuli &amp; Katering Rumahan
+                Menyediakan Nasi Kebuli &amp; Katering Rumahan
               </h1>
               <p className="animate-hero animate-hero-delay-3 text-lg md:text-xl text-on-surface-variant max-w-lg leading-relaxed">
                 Membawa kehangatan dapur ibu ke setiap hidangan. Menggunakan
